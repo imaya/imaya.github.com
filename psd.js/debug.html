@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>psd.js sample page</title>
+  <!--
+  <script src="./closure-primitives/base.js"></script>
+  <script src="./deps.js"></script>
+  <script>
+    var USE_TYPEDARRAY = true;
+    //goog.require('PSD.Parser');
+    Object.keys(goog.dependencies_.nameToPath).forEach(function(name) {
+      goog.require(name);
+    });
+  </script>
+  -->
+  <script src="./bin/psd.parser.min.js"></script>
+  <style>
+    body {
+      font: 18px Helvetica, arial, freesans, clean, sans-serif;
+      padding-top: 100px;
+      padding-bottom: 50px;
+    }
+    h1 {
+      border-bottom: 2px solid #48f;
+      padding: 5px;
+      font-size: xx-large;
+    }
+    h2 {
+      border-left: 0.5em solid #444;
+      padding-left: 10px;
+    }
+    canvas {
+      margin: 1em;
+      border: 1px solid #888;
+      padding: 0.5em;
+      box-shadow: 5px 5px 6px #ccc;
+      -webkit-box-shadow: 5px 5px 6px #ccc;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background-color: #48f;
+      color: white;
+      margin-bottom: 100px;
+      text-shadow: 1px 1px 2px #444;
+      box-shadow: 5px 5px 6px #ccc;
+      -webkit-box-shadow: 5px 5px 6px #444;
+    }
+
+    footer {
+      height: 40px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #48f;
+      color: white;
+      text-shadow: 1px 1px 2px #444;
+    }
+  </style>
+</head>
+
+<script>
+NodeList.prototype.forEach = Array.prototype.forEach;
+window.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('file').addEventListener('change', onFileSelected, false);
+
+  function onFileSelected(e) {
+    var file = document.getElementById("file").files[0];
+    var reader = new FileReader();
+
+    // remove all text
+    document.querySelectorAll('#text > div').forEach(function(element) {
+      var parent = element.parentNode;
+      parent.removeChild(element);
+    });
+
+    // remove all canvas
+    document.querySelectorAll('canvas').forEach(function(element) {
+      var parent = element.parentNode;
+      parent.removeChild(element);
+    });
+
+    reader.onload = function(e) {
+      var input = new Uint8Array(e.target.result);
+      var parser = new PSD.Parser(input);
+
+      parser.parse();
+      console.log("PSD.Parser:", parser);
+
+      // text data
+      parser.layerAndMaskInformation.layerInfo.layerRecord.forEach(function(record) {
+        record.additionalLayerInfo.forEach(function(additionalInfo) {
+          var textNode;
+          var textData;
+          var firstItem;
+
+          if (additionalInfo.key === 'TySh') {
+            textData = additionalInfo.info.textData;
+
+            if (textData.classId !== 'TxLr') {
+              return;
+            }
+
+            firstItem = textData.item[0];
+            if (firstItem.key === 'Txt ' && firstItem.data.string !== void 0) {
+              textNode = document.createElement('li');
+              textNode.textContent = firstItem.data.string;
+              document.getElementById('text').appendChild(textNode);
+            }
+          }
+        });
+      });
+
+      // image data
+      document.getElementById('imagedata').appendChild(parser.imageData.createCanvas(parser.header, parser.colorModeData));
+
+      // layer data
+      var layerInfo = parser.layerAndMaskInformation.layerInfo;
+      var imageData = layerInfo.channelImageData;
+      var record = layerInfo.layerRecord;
+
+      for (var i = 0, il = imageData.length; i < il; ++i) {
+        var canvas = imageData[i].createCanvas(parser.header, parser.colorModeData, record[i]);
+
+        if (canvas) {
+          document.getElementById('layer').appendChild(canvas);
+        }
+      }
+    };
+    reader.readAsArrayBuffer(file);
+
+    e.preventDefault();
+  }
+}, false);
+
+</script>
+<body>
+
+<header>
+<h1>psd.js debug page</h1>
+</header>
+
+<h2>Text Data</h2>
+<ul id="text"></ul>
+
+<h2>Image Data</h2>
+<div id="imagedata"></div>
+
+<h2>Layer and Mask</h2>
+<div id="layer"></div>
+
+<footer>
+  <input type="file" id="file" name="file" />
+</footer>
+
+</body>
+</html>
