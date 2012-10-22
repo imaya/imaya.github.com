@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function() {
     var reader = new FileReader();
 
     // remove all text
-    document.querySelectorAll('#text > div').forEach(function(element) {
+    document.querySelectorAll('#text > li').forEach(function(element) {
       var parent = element.parentNode;
       parent.removeChild(element);
     });
