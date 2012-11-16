@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="gunzip.min.js"></script>
+<script>
+(function(global) {
+  var css =  './gunzip.demo.css.gz';
+  var xhr = new XMLHttpRequest();
+
+  xhr.open('GET', css, true);
+  xhr.addEventListener('load', function(ev) {
+    var link = document.createElement('link');
+    var plain =
+      new Zlib.Gunzip(new Uint8Array(ev.target.response)).decompress();
+
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('type', 'text/css');
+    link.setAttribute(
+      'href',
+      global.URL.createObjectURL(new Blob([plain], {type: 'text/css'}))
+    );
+
+    document.head.appendChild(link);
+  }, false);
+  xhr.responseType = 'arraybuffer';
+  xhr.send();
+})(this);
+</script>
+</head>
+<body>
+GZIP で圧縮した CSS ファイルを JavaScript で展開して使う
+</body>
+</html>
