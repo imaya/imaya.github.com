@@ -11,7 +11,7 @@
 
 var block = {
   newline: /^\n+/,
-  html: /^( {4}[^\n]+\n*)+/,
+  html: /^(?:( {4}[^\n]+\n*)+| *(?:comment|closed|closing) *(?:\n{2,}|\s*$))/,
   fences: noop,
   table: noop,
   nptable: noop,
@@ -20,7 +20,6 @@ var block = {
   lheading: /^([^\n]+)\n *(=|-){3,} *\n*/,
   blockquote: /^( *>[^\n]+(\n[^\n]+)*\n*)+/,
   list: /^( *)(bull) [^\0]+?(?:hr|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
-  html: /^ *(?:comment|closed|closing) *(?:\n{2,}|\s*$)/,
   def: /^ *\[([^\]]+)\]: *([^\s]+)(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,
   paragraph: /^([^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+\n*/,
   text: /^[^\n]+/
