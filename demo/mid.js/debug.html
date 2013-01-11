@@ -84,7 +84,6 @@ window.addEventListener('DOMContentLoaded', function() {
       case '.mld':
         reader.onload = function(e) {
           var input = new Uint8Array(e.target.result);
-          var parser = new SMF.Parser(input);
 
           console.time('smf load');
           player.loadMldFile(input);
@@ -98,7 +97,6 @@ window.addEventListener('DOMContentLoaded', function() {
       case '.mid':
         reader.onload = function(e) {
           var input = new Uint8Array(e.target.result);
-          var parser = new SMF.Parser(input);
 
           console.time('smf load');
           player.loadMidiFile(input);
