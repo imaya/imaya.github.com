@@ -57,7 +57,11 @@
 <script>
 NodeList.prototype.forEach = Array.prototype.forEach;
 var player = new SMF.Player();
+
 window.addEventListener('DOMContentLoaded', function() {
+  //player.setWebMidiLink('./sf_wml.html');
+  player.setWebMidiLink('http://www.g200kg.com/en/docs/gmplayer/');
+
   document.getElementById('file').addEventListener('change', onFileSelected, false);
   function onFileSelected(e) {
     var file = document.getElementById("file").files[0];
@@ -127,9 +131,15 @@ window.addEventListener('DOMContentLoaded', function() {
 
 function loadSample() {
   var xhr = new XMLHttpRequest();
-  var url = 'ys2s01s8.mid';
+  var url =
+    //'./sample/sol_battle002.mid';
+    //'./mfi/mbox_Elgar_ainoaisatu.mld';
+    //'MIDI/SC88/01YS248S.MID';
+    'ys2s01s8.mid';
 
+  //xhr.open('GET', './sample/', true);
   xhr.open('GET', url, true);
+  //xhr.open('GET', './mfi/mbox_Elgar_ainoaisatu.mld', true);
   xhr.addEventListener('load', function (ev) {
     var input = new Uint8Array(xhr.response);
 
@@ -170,9 +180,18 @@ function loadSample() {
 
 <button onclick='player.play();'>start</button>
 <button onclick='player.stop();'>stop</button>
-
-
 <button onclick='loadSample();'>load(XHR)</button>
+
+<br/>
+
+<input id="playerloop" type="checkbox" onchange="player.setLoop(this.checked);"/><label for="playerloop">Loop</label>
+<input id="cc111loop" type="checkbox" onchange="player.setCC111Loop(this.checked);" /><label for="cc111loop">CC#111</label>
+<input id="falcomloop" type="checkbox" onchange="player.setFalcomLoop(this.checked);" /><label for="falcomloop">Marker A-B (Ys2 Eternal)</label>
+<input id="mfiloop" type="checkbox" onchange="player.setMFiLoop(this.checked);" /><label for="mfiloop">MFi</label><br/>
+<label for="pitch">speed</label>
+<input id="pitch" type="number" value="1" onchange="player.setPitch(this.valueAsNumber);" />
+
+
 
 <p>
   このページで使用している TO MAKE THE END OF BATTLE の MIDI ファイルは <a href="http://www.falcom.co.jp/download/midi/down_ysm.html">イース MIDI コレクション</a> ( Copyright &copy; Nihon Falcom Corporation ) のものを利用しています。
