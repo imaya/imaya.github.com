@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="google" value="notranslate" />
+  <link rel="stylesheet" href="./css/diceros.css" />
+  <link rel="stylesheet" href="./css/closure.css" />
+  <link rel="stylesheet" href="./css/colormenubutton.css" />
+  <link rel="stylesheet" href="./css/colorpalette.css" />
+  <title>Diceros demo</title>
+  <script src="./release.js?"></script>
+</head>
+
+<body style="margin: 0px;">
+
+<!--
+<h1>Diceros demo</h1>
+
+<ul>
+  <li>Wacomペンタブレットに対応: <a href="http://www.wacom.com/CustomerCare/Plugin.aspx">plugin</a></li>
+  <li>Alt: 制御点の表示</li>
+  <li>Alt+ホイール: 線の太さを調整(制御点上)</li>
+</ul>
+-->
+
+<div id="application"></div>
+
+<!-- embed name="wacom-plugin" id="wacom-plugin" type="application/x-wacom-tablet" hidden="true"></embed -->
+<object id="wacom-plugin" type="application/x-wacomtabletplugin" style="width: 0px; height: 0px;"></object>
+
+<script>
+  var diceros = new Diceros.Main(document.getElementById('application'), {width: window.innerWidth, height: window.innerHeight});
+  diceros.init();
+  document.body.style.width = window.innerWidth + 'px';
+  document.body.style.margin = 0 + 'px';
+
+</script>
+
+</body>
+</html>
+<!-- vim:set expandtab ts=2 sw=2: -->

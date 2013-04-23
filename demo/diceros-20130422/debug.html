@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="google" value="notranslate" />
+  <link rel="stylesheet" href="./css/diceros.css" />
+  <link rel="stylesheet" href="./css/closure.css" />
+  <link rel="stylesheet" href="./css/colormenubutton.css" />
+  <link rel="stylesheet" href="./css/colorpalette.css" />
+  <link rel="stylesheet" href="./css/dialog.css" />
+  <link rel="stylesheet" href="./css/resizable.css" />
+  <title>Diceros demo</title>
+  <script src="../../birdwatcher.js/birdwatcher.js"></script>
+  <script src="../vendor/google-closure-library/closure/goog/base.js?"></script>
+  <script src="../bin/deps.js?"></script>
+  <script>
+    goog.require('Diceros.Main');
+  </script>
+  <script>
+    /*
+    window.addEventListener('DOMContentLoaded', function() {
+      var targets = [['Diceros']];
+      var bw = new BirdWatcher(targets);
+
+      bw.reportId = 'birdwatcher-demo';
+      //bw.reportUrl = 'http://jsprof.dev.gree.jp:3000/';
+      bw.reportUrl = 'http://10.48.8.204:3000/';
+      //bw.sendMethod = 'xhr';
+      bw.sendMethod = 'xhr-post';
+      bw.start();
+      bw.enableRemoteLog();
+
+      var prev = 0;
+      setInterval(function(){
+        var layer = diceros.diceros.getCurrentCanvasWindow().getCurrentLayer();
+
+        if (layer && layer.lines.length > prev) {
+          console[['log', 'warn', 'error'][Math.random() * 3 | 0]]("lines:", layer.lines.length);
+          prev = layer.lines.length;
+        }
+
+        bw.reportRemote();
+      }, 1000);
+    }, false);
+    */
+  </script>
+</head>
+
+<body style="margin: 0px; -ms-touch-action: none;">
+
+<!--
+<h1>Diceros demo</h1>
+
+<ul>
+  <li>Wacomペンタブレットに対応: <a href="http://www.wacom.com/CustomerCare/Plugin.aspx">plugin</a></li>
+  <li>Alt: 制御点の表示</li>
+  <li>Alt+ホイール: 線の太さを調整(制御点上)</li>
+</ul>
+-->
+
+<div id="application"></div>
+
+<!--
+<embed name="wacom-plugin" id="wacom-plugin" type="application/x-wacom-tablet" hidden="true"></embed>
+-->
+
+<script>
+  /*
+  document.body.addEventListener('touchmove', function(ev) {
+    debugger;
+    ev.preventDefault();
+  }, false);
+  */
+  var diceros = new Diceros.Main(document.getElementById('application'), {width: window.innerWidth, height: window.innerHeight});
+  diceros.init();
+  document.body.style.width = window.innerWidth + 'px';
+  document.body.style.margin = 0 + 'px';
+
+</script>
+
+</body>
+</html>
+<!-- vim:set expandtab ts=2 sw=2: -->

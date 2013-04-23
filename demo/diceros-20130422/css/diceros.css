@@ -1,0 +1,41 @@
+.diceros-layerWindow {
+	background-color: white;
+}
+
+.diceros-selectedLayer {
+	background-color: #ccf;
+}
+ul.diceros-layerList {
+	list-style: none;
+	padding-left: 0px;
+}
+
+ul.diceros-layerWindowMenu {
+	position: absolute;
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+	left: 0px;
+	top: 0px;
+}
+ul.diceros-layerWindowMenu ul {
+	padding-left: 1em;
+}
+
+.goog-splitpane-first-container {
+    background-color: white;
+	border: 1px solid #6b90da;
+	overflow: hidden;
+}
+.goog-splitpane-second-container {
+    background-color: white;
+	border: 1px solid #6b90da;
+	overflow: hidden;
+}
+.goog-splitpane-handle {
+	background-color: #ccc;
+	cursor: col-resize;
+	border: solid 1px white;
+	border-style: none solid;
+}
+
