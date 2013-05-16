@@ -6,6 +6,9 @@
   <script>
     var url = './soundfont/A320U.sf2';
     var wml = new SoundFont.WebMidiLink();
+    wml.setLoadCallback(function() {
+      document.getElementById('message').textContent = '';
+    });
     wml.setup(url);
 
 </script>
@@ -71,6 +74,8 @@
 <div id="samples"> </div>
 
 <h2>Sound Font: A320U</h2>
+
+<div id="message">loading...</div>
 
 <pre>
   Copyright 2005 by Milton Paredes
