@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="./js/sf2wml.min.js"></script>
+  <script>
+    var url = './soundfont/A320U.sf2';
+    var wml = new SoundFont.WebMidiLink();
+    wml.setup(url);
+
+</script>
+  <style>
+    table {
+      font-size: 5px;
+      table-layout: fixed;
+      width: 100%;
+      border-spacing: 0;
+    }
+    th {
+      padding: 0;
+    }
+    tbody > tr:nth-child(odd) {
+      background-color: #eee;
+    }
+    th:first-child,
+    td:first-child {
+      width: 128px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 32px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 32px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 48px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 48px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    /*
+    td:nth-child(65) {
+      background-color: #afa;
+    }
+    */
+    td.note-on {
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div id="samples"> </div>
+
+<h2>Sound Font: A320U</h2>
+
+<pre>
+  Copyright 2005 by Milton Paredes
+  Released under GNU GPL v2, see /usr/share/soundfonts/COPYING
+</pre>
+
+</body>
+</html>
