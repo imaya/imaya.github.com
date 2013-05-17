@@ -7,7 +7,9 @@
     var url = './soundfont/A320U.sf2';
     var wml = new SoundFont.WebMidiLink();
     wml.setLoadCallback(function() {
-      document.getElementById('message').textContent = '';
+      var message = document.getElementById('message');
+      message.textContent = '';
+      message.classList.remove('show');
     });
     wml.setup(url);
 
@@ -81,6 +83,19 @@
     td.note-on {
       background-color: red;
     }
+
+    #message {
+      display: none;
+    }
+    #message.show {
+      padding: 1em;
+      display: block;
+      font-weight: bold;
+      color: darkred;
+      border-radius: 1em;
+      border: 1px solid darkred;
+      background-color: #fcc;
+    }
   </style>
 </head>
 <body>
@@ -89,7 +104,7 @@
 
 <h2>Sound Font: A320U</h2>
 
-<div id="message">loading...</div>
+<div id="message" class="show">loading...</div>
 
 <pre>
   Copyright 2005 by Milton Paredes
