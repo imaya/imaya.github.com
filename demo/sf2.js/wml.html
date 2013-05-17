@@ -64,6 +64,20 @@
       background-color: #afa;
     }
     */
+    td:nth-child(n+5) {
+      border-right: 1px dashed #ccc;
+    }
+    td:nth-child(12n+5) {
+      border-right: 1px solid #888;
+    }
+    td:nth-child(12n+7),
+    td:nth-child(12n+9),
+    td:nth-child(12n+12),
+    td:nth-child(12n+14),
+    td:nth-child(12n+16) {
+      background-color: #ccc;
+      border-right: none;
+    }
     td.note-on {
       background-color: red;
     }
