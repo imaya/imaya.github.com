@@ -13,8 +13,28 @@
     });
     wml.setup(url);
 
-</script>
+    // local file
+    window.addEventListener('DOMContentLoaded', function(event) {
+      var fileElement = document.getElementById('file');
+
+      document.getElementById('file').addEventListener('change', function(event) {
+        var file = document.getElementById("file").files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(event) {
+          wml.loadSoundFont(new Uint8Array(event.target.result));
+        };
+        reader.readAsArrayBuffer(file);
+
+        event.preventDefault();
+      }, false);
+
+    }, false);
+  </script>
   <style>
+    body {
+      background-color: white;
+    }
     table {
       font-size: 5px;
       table-layout: fixed;
@@ -96,13 +116,21 @@
       border: 1px solid darkred;
       background-color: #fcc;
     }
+    div.load {
+      border-top: 1px solid #08f;
+      border-bottom: 1px solid #08f;
+      background-color: #def;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      padding: 0.5em;
+    }
   </style>
 </head>
 <body>
 
 <div id="samples"> </div>
 
-<h2>Sound Font: A320U</h2>
+<h2>Default SoundFont: A320U</h2>
 
 <div id="message" class="show">loading...</div>
 
@@ -110,6 +138,10 @@
   Copyright 2005 by Milton Paredes
   Released under GNU GPL v2, see /usr/share/soundfonts/COPYING
 </pre>
+
+<div class="load">
+  Load SoundFont2 file:<input type="file" id="file" name="file" />
+</div>
 
 </body>
 </html>
