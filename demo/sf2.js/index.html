@@ -117,7 +117,7 @@ function loadSample() {
   var url = "midi/maoudamashii_gamebgm_midi.zip";
 
   xhr.open('GET', url, true);
-  xhr.addEventListener('load', function (ev) {
+  xhr.addEventListener('load', function(ev) {
     var input = new Uint8Array(xhr.response);
 
     var select = document.getElementById('files');

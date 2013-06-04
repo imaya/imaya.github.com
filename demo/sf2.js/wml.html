@@ -6,11 +6,7 @@
   <script>
     var url = './soundfont/A320U.sf2';
     var wml = new SoundFont.WebMidiLink();
-    wml.setLoadCallback(function() {
-      var message = document.getElementById('message');
-      message.textContent = '';
-      message.classList.remove('show');
-    });
+    wml.setLoadCallback(removeMessage);
     wml.setup(url);
 
     // local file
@@ -21,6 +17,7 @@
         var file = document.getElementById("file").files[0];
         var reader = new FileReader();
 
+        removeMessage();
         wml.cancelLoading();
 
         reader.onload = function(event) {
@@ -32,6 +29,12 @@
       }, false);
 
     }, false);
+
+    function removeMessage() {
+      var message = document.getElementById('message');
+      message.textContent = '';
+      message.classList.remove('show');
+    }
   </script>
   <style>
     body {
