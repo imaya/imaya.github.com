@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="./js/sf2synth.min.js"></script>
+  <!--
+<script src="../closure-primitives/base.js"></script>
+<script>
+var USE_TYPEDARRAY = true;
+Object.keys(goog.dependencies_.nameToPath).forEach(function(name) {
+  goog.require(name);
+});
+</script>
+  -->
+  <script>
+    var url = './soundfont/A320U.sf2';
+    var wml = new SoundFont.WebMidiLink();
+    var reverb;
+    wml.setLoadCallback(removeMessage);
+    wml.setup(url);
+
+    // local file
+    window.addEventListener('DOMContentLoaded', function(event) {
+      var fileElement = document.getElementById('file');
+
+      document.getElementById('file').addEventListener('change', function(event) {
+        var file = document.getElementById("file").files[0];
+        var reader = new FileReader();
+
+        removeMessage();
+        wml.cancelLoading();
+
+        reader.onload = function(event) {
+          var data = new Uint8Array(event.target.result);
+          wml.loadSoundFont(data);
+        };
+        reader.readAsArrayBuffer(file);
+
+        event.preventDefault();
+      }, false);
+
+      reverb = document.getElementById('reverb');
+      reverb.addEventListener('change', function(event) {
+        wml.setReverb(event.target.checked);
+      }, false);
+    }, false);
+
+    function removeMessage() {
+      var message = document.getElementById('message');
+      message.textContent = '';
+      message.classList.remove('show');
+      wml.setReverb(reverb.checked);
+    }
+  </script>
+  <style>
+    body {
+      background-color: white;
+    }
+    table {
+      font-size: 5px;
+      table-layout: fixed;
+      width: 100%;
+      border-spacing: 0;
+    }
+    th {
+      padding: 0;
+    }
+    tbody > tr:nth-child(odd) {
+      background-color: #eee;
+    }
+    th:first-child,
+    td:first-child {
+      width: 128px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 32px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 32px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 48px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 48px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+    /*
+    td:nth-child(65) {
+      background-color: #afa;
+    }
+    */
+    td:nth-child(12n+10) {
+      border-right: 1px dashed #ccc;
+    }
+    td:nth-child(12n+5) {
+      border-right: 1px solid #888;
+    }
+    td:nth-child(12n+7),
+    td:nth-child(12n+9),
+    td:nth-child(12n+12),
+    td:nth-child(12n+14),
+    td:nth-child(12n+16) {
+      background-color: #ccc;
+      border-right: none;
+    }
+    td.note-on {
+      background-color: red;
+    }
+
+    #message {
+      display: none;
+    }
+    #message.show {
+      padding: 1em;
+      display: block;
+      font-weight: bold;
+      color: darkred;
+      border-radius: 1em;
+      border: 1px solid darkred;
+      background-color: #fcc;
+    }
+    div.load {
+      border-top: 1px solid #08f;
+      border-bottom: 1px solid #08f;
+      background-color: #def;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      padding: 0.5em;
+    }
+  </style>
+</head>
+<body>
+
+<div id="samples"> </div>
+
+<h2>Default SoundFont: A320U</h2>
+
+<div id="message" class="show">loading...</div>
+
+<pre>
+  Copyright 2005 by Milton Paredes
+  Released under GNU GPL v2, see /usr/share/soundfonts/COPYING
+</pre>
+
+<div class="load">
+  Load SoundFont2 file:<input type="file" id="file" name="file" />
+</div>
+<input type="checkbox" id="reverb" checked /><label for="reverb">Reverb</label>
+
+</body>
+</html>
