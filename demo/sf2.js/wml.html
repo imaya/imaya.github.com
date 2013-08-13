@@ -3,9 +3,19 @@
 <head>
   <title></title>
   <script src="./js/sf2synth.min.js"></script>
+  <!--
+<script src="../closure-primitives/base.js"></script>
+<script>
+var USE_TYPEDARRAY = true;
+Object.keys(goog.dependencies_.nameToPath).forEach(function(name) {
+  goog.require(name);
+});
+</script>
+  -->
   <script>
     var url = './soundfont/A320U.sf2';
     var wml = new SoundFont.WebMidiLink();
+    var reverb;
     wml.setLoadCallback(removeMessage);
     wml.setup(url);
 
@@ -21,19 +31,25 @@
         wml.cancelLoading();
 
         reader.onload = function(event) {
-          wml.loadSoundFont(new Uint8Array(event.target.result));
+          var data = new Uint8Array(event.target.result);
+          wml.loadSoundFont(data);
         };
         reader.readAsArrayBuffer(file);
 
         event.preventDefault();
       }, false);
 
+      reverb = document.getElementById('reverb');
+      reverb.addEventListener('change', function(event) {
+        wml.setReverb(event.target.checked);
+      }, false);
     }, false);
 
     function removeMessage() {
       var message = document.getElementById('message');
       message.textContent = '';
       message.classList.remove('show');
+      wml.setReverb(reverb.checked);
     }
   </script>
   <style>
@@ -147,6 +163,7 @@
 <div class="load">
   Load SoundFont2 file:<input type="file" id="file" name="file" />
 </div>
+<input type="checkbox" id="reverb" checked /><label for="reverb">Reverb</label>
 
 </body>
 </html>
