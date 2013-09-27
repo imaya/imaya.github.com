@@ -77,8 +77,9 @@ function setStartHandler() {
 
     (function exec() {
       if (urls[i]) {
-        startBenchmark(i++);
-        setTimeout(exec, 100)
+        startBenchmark(i++, function() {
+          setTimeout(exec, 100)
+        });
       } else {
         status.textContent = 'Not Running';
       }
@@ -86,7 +87,7 @@ function setStartHandler() {
   }, false);
 }
 
-function startBenchmark(i) {
+function startBenchmark(i, callback) {
   var url = urls[i];
   var xhr = new XMLHttpRequest();
   var tbody = document.getElementById('result');
@@ -153,6 +154,8 @@ function startBenchmark(i) {
     tr.appendChild(td);
 
     tbody.appendChild(tr);
+
+    callback();
   }, false);
   xhr.send();
 
