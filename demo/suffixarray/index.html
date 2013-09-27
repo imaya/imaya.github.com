@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <script src="https://rawgithub.com/imaya/Zlib.SuffixArray/master/bin/suffixarray.min.js"></script>
+  <script src="05-SuffixArray.js"></script>
+  <script>
+    var HatenaSuffixArray = SuffixArray;
+    SuffixArray = void 0;
+  </script>
+  <script src="simple.js"></script>
+  <script src="suffixarray.js"></script>
+
+<script>
+function stringToArray(str) {
+  return str.split('').map(function(char) { return char.charCodeAt(0) & 0xff; });
+}
+function arrayToString(array) {
+  var tmp = [];
+  var i;
+
+  for (i = 0, il = array.length; i < il; ++i) {
+    tmp[i] = String.fromCharCode(array[i]);
+  }
+
+  return tmp.join('');
+}
+function compareArray(array1, array2) {
+  var i;
+  var il;
+
+  if (array1.length !== array2.length) {
+    return false;
+  }
+
+  for (i = 0, il = array1.length; i < il; ++i) {
+    if (array1[i] !== array2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+</script>
+
+<script>
+//*
+var urls = [
+  "alice29.txt",
+  "asyoulik.txt",
+  "cp.html",
+  "fields.c",
+  "grammar.lsp",
+  "kennedy.xls",
+  "lcet10.txt",
+  "plrabn12.txt",
+  "ptt5",
+  "sum",
+  "xargs.1"
+];
+
+
+window.addEventListener('DOMContentLoaded', loadHandler, false);
+
+function loadHandler(event) {
+  setStartHandler();
+}
+
+function setStartHandler() {
+  var button = document.getElementById('start');
+  var status = document.getElementById('status');
+
+  button.addEventListener('click', function(event) {
+    var i = 0;
+
+    status.textContent = 'Running';
+
+    (function exec() {
+      if (urls[i]) {
+        startBenchmark(i++);
+        setTimeout(exec, 100)
+      } else {
+        status.textContent = 'Not Running';
+      }
+    })();
+  }, false);
+}
+
+function startBenchmark(i) {
+  var url = urls[i];
+  var xhr = new XMLHttpRequest();
+  var tbody = document.getElementById('result');
+
+  xhr.open('GET', 'corpus/' + url, true);
+  xhr.responseType = 'arraybuffer';
+  xhr.addEventListener('load', function(event) {
+    var arraybuffer = event.target.response;
+    var inputArray = new Uint8Array(arraybuffer);
+    var inputString = arrayToString(inputArray);
+    var baseResult;
+    var tr = document.createElement('tr');
+    var td;
+    var start;
+    var score;
+    var result;
+
+    // Corpus Filename
+    td = document.createElement('td');
+    td.textContent = url;
+    tr.appendChild(td);
+
+    // Filesize
+    td = document.createElement('td');
+    td.textContent = ("" + inputArray.length).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    tr.appendChild(td);
+
+    // Simple Implementation
+    td = document.createElement('td');
+    start = performance.now();
+    result = new SuffixArray(inputString).sa;
+    score = performance.now() - start;
+    baseResult = result;
+    td.textContent = formatScore(score) + ' ms';
+    tr.appendChild(td);
+
+    // SA-IS Implementation (imaya)
+    td = document.createElement('td');
+    start = performance.now();
+    result = new Zlib.SuffixArray(inputArray).construct();
+    score = performance.now() - start;
+    td.textContent = formatScore(score) + ' ms';
+    td.style.backgroundColor = compareArray(baseResult, result) ? "#ccffcc" : "#ffcccc";
+    tr.appendChild(td);
+
+    // SA-IS Implementation (tarao)
+    td = document.createElement('td');
+    start = performance.now();
+    var hatena = new HatenaSuffixArray(inputString);
+    hatena.make();
+    result = hatena.getSary();
+    score = performance.now() - start;
+    td.textContent = formatScore(score) + ' ms';
+    td.style.backgroundColor = compareArray(baseResult, result) ? "#ccffcc" : "#ffcccc";
+    tr.appendChild(td);
+
+    // KS Algorithm Implementation
+    td = document.createElement('td');
+    start = performance.now();
+    result = suffixArray(inputString);
+    score = performance.now() - start;
+    td.textContent = formatScore(score) + ' ms';
+    td.style.backgroundColor = compareArray(baseResult, result) ? "#ccffcc" : "#ffcccc";
+    tr.appendChild(td);
+
+    tbody.appendChild(tr);
+  }, false);
+  xhr.send();
+
+}
+
+function formatScore(score) {
+  return (score * 100 + 0.5 | 0) / 100;
+}
+
+</script>
+<style>
+  table {
+    border: 1px solid black;
+  }
+  thead {
+    background-color: black;
+    color: white;
+  }
+  th,td {
+    padding: 0.5em;
+  }
+  tbody td:nth-child(n+2) {
+    text-align: right;
+  }
+  tbody tr:nth-last-child(n+2) td {
+    border-bottom: 1px solid #888;
+  }
+  thead a {
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<h1>Suffix Array 実装の Benchmark</h1>
+
+<ul>
+  <li>ベンチマーク対象は <a href="http://corpus.canterbury.ac.nz/">Canterbury Corpus</a> を使用しています。</li>
+  <li>各 Suffix Array 実装の処理速度を比較します</li>
+  <li>シンプル実装の結果を比較して、結果が一致すれば緑、そうでなければ赤くします</li>
+  <li>はてなの実装はそのままでは動かなかったので動作するように手を加えています。手の加え方がまずかったのであればお知らせください。</li>
+</ul>
+
+<button id="start">Start Benchmark/Test</button> <span id="status">Not Running</span>
+<table>
+  <thead>
+  <tr>
+    <th>Filename</th>
+    <th>Size</th>
+    <th>
+      <a href="http://blog.livedoor.jp/dankogai/archives/51765565.html">
+        Simple<br/>
+        Author: dankogai
+      </a>
+    </th>
+    <th>
+      <a href="https://github.com/imaya/Zlib.SuffixArray">
+        Induced Sorting (SA-IS)<br/>
+        Author: imaya
+      </a>
+    </th>
+    <th>
+      <a href="http://d.hatena.ne.jp/naoya/20090416/1239858875">
+        Induced Sorting (SA-IS)<br/>
+        Author: Hatena(tarao)
+      </a>
+    </th>
+    <th>
+      <a href="https://github.com/tixxit/suffixarray">
+        Karkkainen & Sanders (KS Algorithm)<br/>
+        Author: Thomas Switzer
+      </a>
+    </th>
+  </tr>
+  </thead>
+  <tbody id="result">
+  </tbody>
+</table>
+
+</body>
+</html>
