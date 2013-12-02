@@ -116,18 +116,18 @@ function startBenchmark(i, callback) {
 
     // zlib asm.js
     td = document.createElement('td');
-    start = performance.now();
+    start = getNow();
     result = window[key].decompress(compressed);
-    score = performance.now() - start;
+    score = getNow() - start;
     td.textContent = formatScore(score) + ' ms';
     td.style.backgroundColor = compareArray(inputArray, result) ? "#ccffcc" : "#ffcccc";
     tr.appendChild(td);
 
     // zlib.js (imaya)
     td = document.createElement('td');
-    start = performance.now();
+    start = getNow();
     result = new Zlib.Inflate(compressed).decompress();
-    score = performance.now() - start;
+    score = getNow() - start;
     td.textContent = formatScore(score) + ' ms';
     td.style.backgroundColor = compareArray(inputArray, result) ? "#ccffcc" : "#ffcccc";
     tr.appendChild(td);
@@ -138,6 +138,18 @@ function startBenchmark(i, callback) {
   }, false);
   xhr.send();
 
+}
+
+function getNow() {
+  if (window.performance) {
+    if (performance.now) {
+      return performance.now();
+    }
+    if (performance.webkitNow) {
+      return performance.webkitNow();
+    }
+  }
+  return Date.now ? Date.now() : +new Date();
 }
 
 function formatScore(score) {
