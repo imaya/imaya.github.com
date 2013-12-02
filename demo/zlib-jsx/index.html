@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Inflate Benchmark</title>
+  <script src="zlib-asm.js"></script>
+  <script src="inflate.min.js"></script>
+  <script src="zlib.jsx.min.js"></script>
+
+<script>
+function stringToArray(str) {
+  return str.split('').map(function(char) { return char.charCodeAt(0) & 0xff; });
+}
+function arrayToString(array) {
+  var tmp = [];
+  var i;
+
+  for (i = 0, il = array.length; i < il; ++i) {
+    tmp[i] = String.fromCharCode(array[i]);
+  }
+
+  return tmp.join('');
+}
+function compareArray(array1, array2) {
+  var i;
+  var il;
+
+  if (array1.length !== array2.length) {
+    return false;
+  }
+
+  for (i = 0, il = array1.length; i < il; ++i) {
+    if (array1[i] !== array2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+</script>
+
+<script>
+//*
+var urls = [
+  "alice29.txt",
+  "asyoulik.txt",
+  "cp.html",
+  "fields.c",
+  "grammar.lsp",
+  "kennedy.xls",
+  "lcet10.txt",
+  "plrabn12.txt",
+  "ptt5",
+  "sum",
+  "xargs.1"
+];
+
+
+window.addEventListener('DOMContentLoaded', loadHandler, false);
+
+function loadHandler(event) {
+  setStartHandler();
+}
+
+function setStartHandler() {
+  var button = document.getElementById('start');
+  var status = document.getElementById('status');
+
+  button.addEventListener('click', function(event) {
+    var i = 0;
+
+    status.textContent = 'Running';
+
+    (function exec() {
+      if (urls[i]) {
+        startBenchmark(i++, function() {
+          setTimeout(exec, 100)
+        });
+      } else {
+        status.textContent = 'Not Running';
+      }
+    })();
+  }, false);
+}
+
+function startBenchmark(i, callback) {
+  var url = urls[i];
+  var xhr = new XMLHttpRequest();
+  var tbody = document.getElementById('result');
+
+  xhr.open('GET', 'corpus/' + url, true);
+  xhr.responseType = 'arraybuffer';
+  xhr.addEventListener('load', function(event) {
+    var arraybuffer = event.target.response;
+    var inputArray = new Uint8Array(arraybuffer);
+    var tr = document.createElement('tr');
+    var td;
+    var start;
+    var score;
+    var result;
+
+    // Corpus Filename
+    td = document.createElement('td');
+    td.textContent = url;
+    tr.appendChild(td);
+
+    // Filesize
+    td = document.createElement('td');
+    td.textContent = ("" + inputArray.length).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    tr.appendChild(td);
+
+    // Create compressed data (zlib)
+    var compressed = window[key].compress(inputArray);
+    td = document.createElement('td');
+    td.textContent = ("" + compressed.length).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    tr.appendChild(td);
+
+    // zlib asm.js
+    td = document.createElement('td');
+    start = getNow();
+    result = window[key].decompress(compressed);
+    score = getNow() - start;
+    td.textContent = formatScore(score) + ' ms';
+    td.style.backgroundColor = compareArray(inputArray, result) ? "#ccffcc" : "#ffcccc";
+    tr.appendChild(td);
+
+    // zlib.js (imaya)
+    td = document.createElement('td');
+    start = getNow();
+    result = new Zlib.Inflate(compressed).decompress();
+    score = getNow() - start;
+    td.textContent = formatScore(score) + ' ms';
+    td.style.backgroundColor = compareArray(inputArray, result) ? "#ccffcc" : "#ffcccc";
+    tr.appendChild(td);
+
+    // zlib.jsx (imaya)
+    td = document.createElement('td');
+    start = getNow();
+    window.data = compressed;
+    JSX.require('benchmark.jsx')._Main.main();
+    result = window.result;
+    score = getNow() - start;
+    td.textContent = formatScore(score) + ' ms';
+    td.style.backgroundColor = compareArray(inputArray, result) ? "#ccffcc" : "#ffcccc";
+    tr.appendChild(td);
+
+    tbody.appendChild(tr);
+
+    callback();
+  }, false);
+  xhr.send();
+
+}
+
+function getNow() {
+  if (window.performance) {
+    if (performance.now) {
+      return performance.now();
+    }
+    if (performance.webkitNow) {
+      return performance.webkitNow();
+    }
+  }
+  return Date.now ? Date.now() : +new Date();
+}
+
+function formatScore(score) {
+  return (score * 100 + 0.5 | 0) / 100;
+}
+
+</script>
+<style>
+  table {
+    border: 1px solid black;
+  }
+  thead {
+    background-color: black;
+    color: white;
+  }
+  th,td {
+    padding: 0.5em;
+  }
+  tbody td:nth-child(n+2) {
+    text-align: right;
+  }
+  tbody tr:nth-last-child(n+2) td {
+    border-bottom: 1px solid #888;
+  }
+  thead a {
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<h1>Inflate 実装の Benchmark</h1>
+
+<ul>
+  <li>ベンチマーク対象は <a href="http://corpus.canterbury.ac.nz/">Canterbury Corpus</a> を使用しています。</li>
+  <li>各 Inflate 実装の処理速度を比較します</li>
+  <li>データの圧縮には zlib-asm の圧縮機能を利用しています</li>
+  <li>圧縮前のデータと結果を比較して、一致すれば緑、そうでなければ赤くします</li>
+</ul>
+
+<button id="start">Start Benchmark/Test</button> <span id="status">Not Running</span>
+<table>
+  <thead>
+  <tr>
+    <th>Filename</th>
+    <th>Size</th>
+    <th>Compressed</th>
+    <th>
+      <a href="https://github.com/ukyo/zlib-asm">
+        zlib-asm<br/>
+        (Emscripten)
+      </a>
+    </th>
+    <th>
+      <a href="https://github.com/imaya/zlib.js">
+        zlib.js<br/>
+        Author: imaya
+      </a>
+    </th>
+    <th>
+      zlib.jsx<br/>
+      Author: imaya
+    </th>
+  </tr>
+  </thead>
+  <tbody id="result">
+  </tbody>
+</table>
+
+</body>
+</html>
