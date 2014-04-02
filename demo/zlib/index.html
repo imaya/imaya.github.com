@@ -5,6 +5,7 @@
   <title>Inflate Benchmark</title>
   <script src="zlib-asm.js"></script>
   <script src="inflate.min.js"></script>
+  <script src="pako_inflate.min.js"></script>
 
 <script>
 function stringToArray(str) {
@@ -132,6 +133,15 @@ function startBenchmark(i, callback) {
     td.style.backgroundColor = compareArray(inputArray, result) ? "#ccffcc" : "#ffcccc";
     tr.appendChild(td);
 
+    // pako
+    td = document.createElement('td');
+    start = getNow();
+    result = pako.inflate(compressed);
+    score = getNow() - start;
+    td.textContent = formatScore(score) + ' ms';
+    td.style.backgroundColor = compareArray(inputArray, result) ? "#ccffcc" : "#ffcccc";
+    tr.appendChild(td);
+
     tbody.appendChild(tr);
 
     callback();
@@ -204,9 +214,15 @@ function formatScore(score) {
       </a>
     </th>
     <th>
-      <a href="https://github.com/imaya/zlib.js">
-        zlib.js<br/>
-        Author: imaya
+    <a href="https://github.com/imaya/zlib.js">
+      zlib.js<br/>
+      Author: imaya
+    </a>
+  </th>
+    <th>
+      <a href="https://github.com/nodeca/pako">
+        pako<br/>
+        Author: Andrey Tupitsin, Vitaly Puzrin
       </a>
     </th>
   </tr>
